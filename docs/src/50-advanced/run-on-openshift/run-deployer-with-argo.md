@@ -5,7 +5,7 @@ Running Cloud Pak Deployer through Argo CD is a seamless process. Given that Clo
 <br>
 <br>
 
-![Alt text](cloud-pak-deployer-argo.png)
+![Alt text](../images/cloud-pak-deployer-argo.png)
 
 ## Log in to the OpenShift cluster
 Log is as a cluster administrator to be able to run the deployer with the correct permissions.
@@ -130,7 +130,7 @@ stringData:
 ## Install 'Red Hat OpenShift GitOps' (Argo) operator from OpenShift's Operator Hub
 As a cluster admin, proceed to install this operator using the default selections
 
-![Alt text](f2d20126-b5aa-4c8a-abee-c0614ce57633.png)
+![Alt text](../images/f2d20126-b5aa-4c8a-abee-c0614ce57633.png)
 
 ## Create ArgoCD resources
 
@@ -293,7 +293,7 @@ EOF
     * The ArgoCD UI will resemble the screenshot provided below:
     <br>
 
-![Alt text](039d8ab8-01f3-4097-9179-4ee4ccbc53ae.png)
+![Alt text](../images/039d8ab8-01f3-4097-9179-4ee4ccbc53ae.png)
 
 * Establish a Git configuration repository to store the anticipated state of the CP4 target instance.
   * Here's an example of the same, located in this [folder](../../../../config-repo-for-argo) 
@@ -304,7 +304,7 @@ EOF
   * Upon successful execution of the aforementioned step, the repository will be listed in the ArgoCD UI, as depicted below:
   <br>
 
-![Alt text](image-1.png)
+![Alt text](../images/image-1.png)
 
 ## Create Argo application 
 Replace the <b>repoURL:</b> field value with the endpoint URL of your config Git repository in the snippet provided below, and then execute it from the command line:
@@ -332,20 +332,20 @@ Replace the <b>repoURL:</b> field value with the endpoint URL of your config Git
         - CreateNamespace=true
     EOF
   ```
-* Argo app would appear in Argo UI (as shown in the screen shot below) after successful execution of the command given in the above step
+* After successfully executing the command provided in the previous step, the Argo app will appear in the ArgoCD UI, as illustrated in the screenshot below:s
 
-    ![Alt text](3ed9c064-d923-42d9-b9e7-d43426d9b53d.png)
+    ![Alt text](../images/3ed9c064-d923-42d9-b9e7-d43426d9b53d.png)
 
 ## Establish Sync 
-Sync starts automatically, command below could executed from the terminal for manual sync
+Although synchronization starts automatically, it can be manually triggered from the terminal by executing the following command:
 ```
 argocd app sync cloud-pak-deployer-gitops/cloud-pak-deployer-argo-app 
 ```
 
-The deployer job gets hooked, post sync. The job start running in OpenShift's cloud-pak-deployer namespace. The status could be seen from Argo CD UI and may look like similar to below screenshot, when the job finishes its run and the actual state is synched with desired state.
+The deployer job gets hooked after the synchronization. It starts running in OpenShift's 'cloud-pak-deployer' namespace. The status can be viewed from the Argo CD UI, and it may appear similar to the screenshot below once the job completes its run and the actual state is synchronized with the desired state:s
 
-![Alt text](image-3.png)
+![Alt text](../images/image-3.png)
 
 Henceforth, it's simply a matter of modifying the config file to add/remove cartridges and pushing it to the repository. The Argo pipeline and the post-sync job will handle the rest. The demo below illustrates what can be achieved by following the steps mentioned above.
 
-[![Watch the Demo](91a48b37-3493-481a-9fa8-0e5aa16e740f.png)](https://ibm.box.com/s/xnuxi37n51l3bb8o2uiafqaxmmle3xyg)
+[![Watch the Demo](../images/91a48b37-3493-481a-9fa8-0e5aa16e740f.png)](https://ibm.box.com/s/xnuxi37n51l3bb8o2uiafqaxmmle3xyg)
