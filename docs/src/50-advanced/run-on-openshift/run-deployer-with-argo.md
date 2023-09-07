@@ -1,6 +1,9 @@
 # Running deployer on OpenShift using ArgoCD
 <br>
 <br>
+Running Cloud Pak Deployer through Argo CD is a seamless process. Given that Cloud Pak Deployer synchronizes the current state with the desired state defined in the configuration, Argo is an ideal choice for streamlining the deployment process to an advanced level. Here's the architecture of CP4D deployment using Argo CD.
+<br>
+<br>
 
 ![Alt text](cloud-pak-deployer-argo.png)
 
@@ -125,13 +128,13 @@ stringData:
 ```
 
 ## Install 'Red Hat OpenShift GitOps' (Argo) operator from OpenShift's Operator Hub
-As cluster admin install this operator using default selection
+As a cluster admin, proceed to install this operator using the default selections
 
 ![Alt text](f2d20126-b5aa-4c8a-abee-c0614ce57633.png)
 
 ## Create ArgoCD resources
 
-* Create argo server running the command given below
+* Create an Argo server instance by executing the following command:
 
 ```
 cat << EOF | oc apply -f -
@@ -261,50 +264,50 @@ spec:
 EOF
 ```
 
-* Install argocd cli following this [article](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
-* Execute the command given below, from the terminal to get the route url of the argo server instance
+* Install the ArgoCD CLI by following the instructions provided in this [article](https://argo-cd.readthedocs.io/en/stable/cli_installation/)
+* Run the following command from the terminal to obtain the route URL of the Argo server instance:
 ```
     oc get routes -n cloud-pak-deployer-gitops | grep argocd-gitops-server | awk '{print $2}'
 ```
-* Hold the route url in an env variable
+* Route URL could be stored in an environment variable using the following command:
 ```
     export ARGOCD_SERVER_URL=$(oc get routes -n cloud-pak-deployer-gitops | grep argocd-gitops-server | awk '{print $2}')
 ```
-* Get the 'admin' credential to login to argocd UI, by executing the command below, from terminal. The command output will give the password for 'admin' user
+* Retrieve the 'admin' credentials for logging into the ArgoCD UI by executing the following command in the terminal. The command output will provide the password for the 'admin' user:
 ```
     oc extract secret/argocd-gitops-cluster -n cloud-pak-deployer-gitops --to=-
 ```
-* Login to argocd server 
+* To log in to the ArgoCD server, use the following command: 
     * execute the command below from terminal
         ```
         argocd login $ARGOCD_SERVER_URL
         ```
-    * accept the self signed certificate by typing 'y' and the enter (in production tls cert from a cert authority should attached to the argocd server)
-    * enter username as 'admin'
-    * enter password (copy the secret value extracted following earlier step)
+    * Accept the self-signed certificate by typing 'y' and then pressing Enter. Please note that in a production environment, it's advisable to use a TLS certificate from a certified authority for the ArgoCD server
+    * Enter the username as 'admin'.
+    * Enter the password (copy the secret value extracted following an earlier step).
 * Login to ArgoCD UI
     * Go to "Networking > Routes" from OpenShift web console ('argocd' should be selected as namespace )
     * Click the route url of 'argocd-gitops-server' route.
     * Login as OpenShift User (sso is enabled)
     * Login as 'admin' - getting the password of admin user is explained in earlier steps
-    * ArgoCD UI would look like similar to the screenshot below 
+    * The ArgoCD UI will resemble the screenshot provided below:
     <br>
 
 ![Alt text](039d8ab8-01f3-4097-9179-4ee4ccbc53ae.png)
 
-* Create a config git repo to hold expected state of the configuration of CP4 target instance
-  * here is an example of the same, located at this [folder](../../../../config-repo-for-argo) 
-* Execute the command below to add the config repo to argocd server 
+* Establish a Git configuration repository to store the anticipated state of the CP4 target instance.
+  * Here's an example of the same, located in this [folder](../../../../config-repo-for-argo) 
+* Run the following command to add the configuration repository to the ArgoCD server: 
 ```
     argocd repo add <<config git repo end point url>> --username <<token name>> --password <<token>>
 ```
-  * After successful execution of the step above, the repo will be listed in Argo UI, as shown below
+  * Upon successful execution of the aforementioned step, the repository will be listed in the ArgoCD UI, as depicted below:
   <br>
 
 ![Alt text](image-1.png)
 
 ## Create Argo application 
-Replace the <b>repoURL:</b> field value with config git repo endpoint url in the snippet given below and the execute from command line
+Replace the <b>repoURL:</b> field value with the endpoint URL of your config Git repository in the snippet provided below, and then execute it from the command line:
   ```
     cat << EOF | oc apply -f -
     apiVersion: argoproj.io/v1alpha1
@@ -343,4 +346,6 @@ The deployer job gets hooked, post sync. The job start running in OpenShift's cl
 
 ![Alt text](image-3.png)
 
-Hencforth, it's just a matter of modify the config file to add/remove cartridges and push it to repository, argo pipeline and post sych job would take care of the rests.
+Henceforth, it's simply a matter of modifying the config file to add/remove cartridges and pushing it to the repository. The Argo pipeline and the post-sync job will handle the rest. The demo below illustrates what can be achieved by following the steps mentioned above.
+
+[![Watch the Demo](91a48b37-3493-481a-9fa8-0e5aa16e740f.png)](https://ibm.box.com/s/xnuxi37n51l3bb8o2uiafqaxmmle3xyg)
